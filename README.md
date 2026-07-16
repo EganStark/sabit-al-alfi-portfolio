@@ -9,8 +9,6 @@
 
   <p>
     <a href="https://sabit-al-alfi-portfolio.vercel.app"><strong>View live portfolio ↗</strong></a>
-    &nbsp;·&nbsp;
-    <a href="https://sabit-al-alfi-portfolio.vercel.app/admin/login"><strong>CMS sign in</strong></a>
   </p>
 
   <p>
