@@ -1,0 +1,37 @@
+---
+import '../styles/global.css';
+import { createCmsClient } from '../lib/cms/supabase';
+import BackToTop from '../components/BackToTop.astro';
+interface Props { title?: string; description?: string; }
+const defaults={site_title:'Sabit Al Alfi — Engineer & XAI Researcher',default_description:'Sabit Al Alfi builds explainable AI systems and practical software across research, web, and systems engineering.',author_name:'Sabit Al Alfi',og_image_url:'/og-image.svg',site_url:null};
+let settings=defaults;
+if(Astro.locals.cmsConfigured){const{data}=await createCmsClient(Astro.request,Astro.cookies)!.from('site_settings').select('site_title,default_description,author_name,og_image_url,site_url').eq('id','primary').maybeSingle();if(data)settings={...settings,...data}}
+const title=Astro.props.title??settings.site_title,description=Astro.props.description??settings.default_description;
+const canonical=settings.site_url?new URL(Astro.url.pathname,settings.site_url).toString():undefined;
+const ogImage=settings.og_image_url.startsWith('http')?settings.og_image_url:settings.site_url?new URL(settings.og_image_url,settings.site_url).toString():settings.og_image_url;
+---
+<!doctype html>
+<html lang="en" class="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <meta name="description" content={description} />
+    <meta name="author" content={settings.author_name} />
+    <meta name="robots" content="index, follow" />
+    <meta name="theme-color" content="#0a0a0c" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content="website" />
+    <meta property="og:image" content={ogImage} />
+    {canonical && <><link rel="canonical" href={canonical} /><meta property="og:url" content={canonical} /></>}
+    <meta name="twitter:card" content="summary_large_image" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <title>{title}</title>
+    <script is:inline>
+      const saved = localStorage.getItem('theme');
+      const dark = saved ? saved === 'dark' : matchMedia('(prefers-color-scheme: dark)').matches;
+      document.documentElement.classList.toggle('dark', dark);
+    </script>
+  </head>
+  <body><a class="skip-link" href="#main-content">Skip to main content</a><slot /><BackToTop /></body>
+</html>

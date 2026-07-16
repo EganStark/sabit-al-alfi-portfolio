@@ -1,0 +1,12 @@
+---
+import AdminLayout from '../../../layouts/AdminLayout.astro';
+import PostForm from '../../../components/admin/PostForm.astro';
+import { createCmsClient } from '../../../lib/cms/supabase';
+import type { CmsPost } from '../../../lib/cms/types';
+const { id } = Astro.params;
+const cms=createCmsClient(Astro.request, Astro.cookies)!;const { data } = await cms.from('posts').select('*').eq('id', id).single();
+if (!data) return Astro.redirect('/admin/posts');
+const post = data as CmsPost;
+const{data:revisions}=await cms.from('post_revisions').select('id,created_at,snapshot').eq('post_id',id).order('created_at',{ascending:false}).limit(20);
+---
+<AdminLayout title="Edit post" description={`Updating “${post.title}”`}><div class="admin-content"><div class="admin-actions"><a class="admin-button" href={`/admin/posts/${post.id}/preview`} target="_blank">Preview draft ↗</a></div><PostForm mode="edit" post={post} />{revisions?.length&&<section class="panel revisions"><h2>Revision history</h2><p>Each update automatically preserves the previous version.</p>{revisions.map((r:any)=><form method="post" action={`/api/admin/posts/${post.id}/restore`}><input type="hidden" name="revision_id" value={r.id}/><span>{new Date(r.created_at).toLocaleString('en-GB')} · {r.snapshot.title}</span><button class="admin-button" type="submit">Restore</button></form>)}</section>}</div></AdminLayout><style>.revisions{margin-top:18px}.revisions h2{font:500 24px Space Grotesk}.revisions>p{color:var(--muted)}.revisions form{display:flex;justify-content:space-between;align-items:center;gap:16px;padding:10px 0;border-top:1px solid var(--line)}</style>

@@ -1,0 +1,29 @@
+---
+import type { CmsPost } from '../../lib/cms/types';
+interface Props { post?: Partial<CmsPost>; mode: 'create' | 'edit' }
+const { post = {}, mode } = Astro.props;
+const action = mode === 'create' ? '/api/admin/posts/new' : `/api/admin/posts/${post.id}`;
+---
+<form class="panel form-grid" method="post" action={action} enctype="multipart/form-data">
+  <div class="field"><label for="title">TITLE</label><input id="title" name="title" value={post.title ?? ''} minlength="3" maxlength="160" required /></div>
+  <div class="field"><label for="slug">URL SLUG</label><input id="slug" name="slug" value={post.slug ?? ''} pattern="[a-z0-9]+(?:-[a-z0-9]+)*" placeholder="generated-from-title" /></div>
+  <div class="field full"><label for="excerpt">SUMMARY</label><textarea id="excerpt" name="excerpt" maxlength="320" rows="3">{post.excerpt ?? ''}</textarea></div>
+  <div class="field full"><label for="body">ARTICLE CONTENT</label><textarea id="body" name="body" required>{post.body ?? ''}</textarea><small>Plain text paragraphs are rendered safely. Rich structured blocks arrive in the next editor phase.</small></div>
+  <div class="field"><label for="cover_file">COVER IMAGE</label><input id="cover_file" name="cover_file" type="file" accept="image/jpeg,image/png,image/webp,image/avif" /><small>JPEG, PNG, WebP, or AVIF · maximum 5 MB</small></div>
+  <div class="field"><label for="cover_alt">COVER ALT TEXT</label><input id="cover_alt" name="cover_alt" value={post.cover_alt ?? ''} maxlength="180" /></div>
+  <div class="field"><label for="tags">TAGS</label><input id="tags" name="tags" value={post.tags?.join(', ') ?? ''} placeholder="AI, Research, Notes" /></div>
+  <div class="field"><label for="status">STATUS</label><select id="status" name="status"><option value="draft" selected={post.status === 'draft' || !post.status}>Draft</option><option value="published" selected={post.status === 'published'}>Published</option><option value="scheduled" selected={post.status === 'scheduled'}>Scheduled</option></select></div>
+  <div class="field"><label for="published_at">PUBLISH DATE</label><input id="published_at" name="published_at" type="datetime-local" value={post.published_at?.slice(0,16) ?? ''} /></div>
+  <label class="check"><input type="checkbox" name="featured" value="true" checked={post.featured} /> Feature this post</label>
+  <div class="field full admin-actions"><button class="admin-button primary" type="submit">{mode === 'create' ? 'Save post' : 'Update post'}</button><a class="admin-button" href="/admin/posts">Cancel</a></div>
+</form>
+<script>
+  const title = document.querySelector<HTMLInputElement>('#title');
+  const slug = document.querySelector<HTMLInputElement>('#slug');
+  title?.addEventListener('input', () => {
+    if (!slug || slug.dataset.edited === 'true') return;
+    slug.value = title.value.toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+  });
+  slug?.addEventListener('input', () => slug.dataset.edited = 'true');
+</script>
+

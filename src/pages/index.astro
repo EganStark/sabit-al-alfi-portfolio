@@ -1,0 +1,109 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import SignalLine from '../components/SignalLine.astro';
+import SiteNav from '../components/SiteNav.astro';
+import SiteFooter from '../components/SiteFooter.astro';
+import HeroTrace from '../components/HeroTrace.astro';
+import SectionManager from '../components/SectionManager.astro';
+import { getCollection } from 'astro:content';
+import { createCmsClient } from '../lib/cms/supabase';
+let projects:any[] = (await getCollection('projects')).sort((a, b) => a.data.order - b.data.order).slice(0, 4);
+let papers:any[] = (await getCollection('research')).sort((a, b) => a.data.order - b.data.order);
+let skills = [
+  ['ML & Research', 'Python · PyTorch · TensorFlow · Scikit-learn · SHAP · Grad-CAM'],
+  ['Software', 'C · C++ · TypeScript · JavaScript · SQL · HTML · CSS'],
+  ['Systems & Practice', 'Linux · Git · OpenGL · Supabase · LaTeX · Data visualization'],
+];
+let profile={role_line:'ENGINEER · RESEARCHER · BUILDER',hero_headline:'I make complex systems easier to understand.',hero_intro:'I’m Sabit Al Alfi, a computer science graduate building explainable AI systems and practical software—from research prototypes to products people can use.',display_name:'Sabit Al Alfi',location:'Dhaka, Bangladesh',focus_label:'Explainable AI',work_mode:'Research + Shipping',availability_enabled:true,availability_title:'Available for opportunities',availability_detail:'Seeking Data Science, Machine Learning, and AI Engineer roles.',home_about_headline:'Research depth. Engineering range.',home_about_description:'My work sits between understanding and building. I study why models make decisions, then carry that same first-principles mindset into databases, interfaces, graphics, and systems. The goal is not technology for its own sake—it is software that earns trust by being clear, useful, and well made.'};let contact={home_headline:'Let’s build something that matters.',home_description:'I’m currently looking for roles and collaborations in data science, machine learning, and AI engineering.'};if(Astro.locals.cmsConfigured){const cms=createCmsClient(Astro.request,Astro.cookies)!;const[profileResult,contactResult,projectResult,researchResult,skillResult]=await Promise.all([cms.from('profile_content').select('*').eq('id','primary').maybeSingle(),cms.from('contact_content').select('home_headline,home_description').eq('id','primary').maybeSingle(),cms.from('projects').select('*').eq('visible',true).order('featured',{ascending:false}).order('sort_order').limit(4),cms.from('research_papers').select('*').eq('visible',true).order('sort_order'),cms.from('skill_groups').select('title,skills,sort_order').eq('visible',true).order('sort_order')]);if(profileResult.data)profile={...profile,...profileResult.data};if(contactResult.data)contact={...contact,...contactResult.data};if(projectResult.data?.length)projects=projectResult.data.map(item=>({data:{title:item.title,category:item.category,status:item.status,description:item.description,tags:item.tags,featured:item.featured}}));if(researchResult.data?.length)papers=researchResult.data.map(item=>({data:{title:item.title,abstract:item.abstract,link:item.publication_url,publisher:item.publisher,year:item.publication_year,authorshipLabel:item.authorship_label,authorPosition:item.author_position,authorCount:item.author_count}}));if(skillResult.data?.length)skills=skillResult.data.map(item=>[item.title,item.skills.join(' · ')])}
+const namePosition=profile.hero_intro.indexOf(profile.display_name);
+const introBefore=namePosition>=0?profile.hero_intro.slice(0,namePosition):profile.hero_intro;
+const introAfter=namePosition>=0?profile.hero_intro.slice(namePosition+profile.display_name.length):'';
+---
+<BaseLayout>
+  <SiteNav />
+  <main id="main-content">
+    <section class="hero container" aria-labelledby="hero-title">
+      <HeroTrace />
+      <div class="hero-copy">
+        <p class="eyebrow">{profile.role_line}</p>
+        <h1 id="hero-title" class="display">{profile.hero_headline}</h1>
+        <SignalLine />
+        <p class="hero-lead">{introBefore}{namePosition>=0&&<strong>{profile.display_name}</strong>}{introAfter}</p>
+        <div class="actions"><a class="button primary" href="/projects">Explore selected work <span>→</span></a><a class="button" href="/contact">Start a conversation</a></div>
+      </div>
+      {profile.availability_enabled&&<aside class="availability"><span class="pulse"></span><div><small>CURRENT STATUS</small><strong>{profile.availability_title}</strong><p>{profile.availability_detail}</p></div></aside>}
+    </section>
+    <div class="identity-strip"><div class="container identity-grid"><div><span>BASE</span><strong>{profile.location}</strong></div><div><span>FOCUS</span><strong>{profile.focus_label}</strong></div><div><span>MODE</span><strong>{profile.work_mode}</strong></div><div class="strip-mark"><span>PROFILE</span><strong>{profile.display_name}</strong></div></div></div>
+
+    <section id="about" class="section"><div class="container editorial"><div><p class="eyebrow">01 / ABOUT</p><SignalLine /><p class="margin-note">FIELD NOTE 01<br/>Clarity is a technical feature.</p></div><div><h2 class="display">{profile.home_about_headline}</h2><p class="muted">{profile.home_about_description}</p></div></div></section>
+
+    <section id="work" class="section"><div class="container"><header class="section-head"><p class="eyebrow">02 / SELECTED WORK</p><SignalLine /><h2 class="display">Proof through projects.</h2><p class="muted">A deliberately mixed selection: research-grade machine learning alongside shipped web and systems work.</p></header><div class="project-grid">{projects.map((project, i) => <article class:list={["card", { featured: project.data.featured }]}><span class="record-no">PRJ / 0{i + 1}</span><div class="card-meta"><p class="eyebrow">{project.data.category}</p>{project.data.status === 'In Progress' && <span class="status">In progress</span>}</div><h3 class="display">{project.data.title}</h3><p class="muted">{project.data.description}</p><div class="tags">{project.data.tags.map((tag:string) => <span class="tag">{tag}</span>)}</div></article>)}</div><a class="all-link" href="/projects">View all projects <span>→</span></a></div></section>
+
+    <section class="section"><div class="container"><header class="section-head"><p class="eyebrow">03 / CAPABILITIES</p><SignalLine /><h2 class="display">Across the whole stack.</h2></header><div class="skill-list">{skills.map(([title, list], i) => <article><span class="skill-no">0{i + 1}</span><h3 class="display">{title}</h3><p class="muted">{list}</p></article>)}</div></div></section>
+
+    <section id="research" class="section"><div class="container"><header class="section-head"><p class="eyebrow">04 / RESEARCH</p><SignalLine /><h2 class="display">Four published works.</h2><p class="muted">A complete publication record across computer vision, explainability, agriculture, and environmental intelligence.</p></header><div class="paper-list">{papers.map((paper, i) => <article><span class="citation">[{String(i + 1).padStart(2, '0')}]</span><div><div class="paper-top"><div class="paper-badges"><span class="tag">{paper.data.authorshipLabel}</span><span class="author-order">{paper.data.authorPosition} / {paper.data.authorCount} authors</span></div><span class="status">{paper.data.publisher} · {paper.data.year}</span></div><h3 class="display">{paper.data.title}</h3><p class="muted">{paper.data.abstract}</p><a class="project-link" href={paper.data.link!} target="_blank" rel="noreferrer">View publication <span>↗</span></a></div></article>)}</div><a class="all-link" href="/research">View full publication record <span>→</span></a></div></section>
+
+    <section id="contact" class="section contact"><div class="container contact-inner"><div><p class="eyebrow">05 / CONTACT</p><SignalLine /><h2 class="display">{contact.home_headline}</h2></div><div><p class="muted">{contact.home_description}</p><a class="button primary" href="/contact">Open contact page <span>→</span></a></div></div></section>
+  </main>
+  <SectionManager page="home" />
+  <SiteFooter />
+  <script>
+  </script>
+</BaseLayout>
+
+<style>
+  .hero { position: relative; isolation: isolate; min-height: calc(92vh - 84px); padding-block: clamp(6rem, 12vw, 10rem) 4rem; display: grid; grid-template-columns: minmax(0, 1fr) 270px; align-items: end; gap: 4rem; }
+  .hero-copy { min-width: 0; max-width: 850px; }
+  .hero h1 { max-width: 830px; margin: 1.5rem 0 1rem; font-size: clamp(3.35rem, 6.2vw, 5.9rem); line-height: .97; }
+  .hero-lead { max-width: 720px; margin: 2rem 0; color: var(--text-secondary); font-size: clamp(1.05rem, 2vw, 1.25rem); }
+  .hero-lead strong { color: var(--accent); font-weight: 700; }
+  .actions { display: flex; flex-wrap: wrap; gap: .75rem; }
+  .availability { position: relative; z-index: 2; align-self: end; margin-bottom: 9.5rem; display: flex; gap: .9rem; padding: 1.1rem; border: 1px solid var(--border); background: var(--bg); }
+  .availability small { display: block; margin-bottom: .35rem; font: 500 .62rem "JetBrains Mono"; letter-spacing: .1em; color: var(--accent); }.availability strong { display: block; font: 500 1rem "Space Grotesk"; color: var(--text-primary); }.availability p { margin: .3rem 0 0; font-size: .86rem; color: var(--text-secondary); }
+  .pulse { width: 8px; height: 8px; margin-top: .45rem; flex: none; border-radius: 50%; background: var(--accent); box-shadow: 0 0 0 5px var(--accent-soft); }
+  .identity-strip { border-block: 1px solid var(--border); background: color-mix(in srgb, var(--surface), transparent 35%); }
+  .identity-grid { min-height: 84px; display: grid; grid-template-columns: repeat(3, 1fr) auto; align-items: stretch; }
+  .identity-grid > div { display: grid; align-content: center; padding: 1rem 1.5rem; border-left: 1px solid var(--border); }
+  .identity-grid > div:first-child { border-left: 0; padding-left: 0; }
+  .identity-grid span, .strip-mark { font: 500 .58rem "JetBrains Mono"; letter-spacing: .12em; color: var(--text-tertiary); }
+  .identity-grid strong { margin-top: .25rem; font: 500 .83rem "Space Grotesk"; }
+  .identity-grid .strip-mark { align-content: center; }.identity-grid .strip-mark span { color: var(--accent); }.identity-grid .strip-mark strong { color: var(--text-primary); }
+  .editorial { display: grid; grid-template-columns: 1fr 2fr; gap: 4rem; }
+  .editorial h2 { margin: 0 0 1.5rem; font-size: clamp(2.25rem, 4.2vw, 3.9rem); line-height: 1.03; }
+  .editorial p { max-width: 700px; font-size: 1.1rem; }
+  .editorial .margin-note { margin-top: 4rem; font: 500 .62rem/1.7 "JetBrains Mono"; letter-spacing: .08em; color: var(--text-tertiary); }
+  .project-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; }
+  .project-grid .featured { grid-column: span 2; }
+  .card h3 { margin: 1.3rem 0 .6rem; font-size: clamp(1.6rem, 3vw, 2.3rem); }
+  .record-no { position: absolute; top: 1.3rem; right: 1.4rem; font: 500 .58rem "JetBrains Mono"; letter-spacing: .1em; color: var(--text-tertiary); }
+  .card-meta, .paper-top { display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
+  .paper-badges{display:flex;align-items:center;flex-wrap:wrap;gap:.55rem}.author-order{font:.58rem "JetBrains Mono";letter-spacing:.06em;color:var(--text-tertiary);text-transform:uppercase}.paper-list article:nth-child(n+3) h3{font-size:clamp(1.45rem,2.8vw,2.25rem)}
+  .status { display: inline-flex; padding: .3rem .55rem; border: 1px solid var(--accent); border-radius: 999px; color: var(--accent); font: 500 .65rem "JetBrains Mono"; text-transform: uppercase; }
+  .filters { display: flex; flex-wrap: wrap; gap: .5rem; margin: -1rem 0 1.5rem; }
+  .filter { min-height: 44px; padding: .55rem .9rem; border: 1px solid var(--border); border-radius: 999px; background: transparent; color: var(--text-secondary); cursor: pointer; }
+  .filter:hover, .filter.active { border-color: var(--accent); background: var(--accent-soft); color: var(--text-primary); }
+  [data-project][hidden] { display: none; }
+  .card p { max-width: 650px; }.tags { display: flex; flex-wrap: wrap; gap: .45rem; margin: 1.5rem 0; }
+  .project-link { display: inline-flex; gap: .5rem; align-items: center; min-height: 44px; font-weight: 500; }.project-link:hover { color: var(--accent); }
+  .all-link { min-height: 44px; display: inline-flex; align-items: center; gap: .6rem; margin-top: 1.5rem; font-weight: 500; }.all-link:hover { color: var(--accent); }
+  .project-actions { min-height: 44px; display: flex; gap: 1rem; align-items: center; }
+  .skill-list { border-top: 1px solid var(--border); }
+  .skill-list article { display: grid; grid-template-columns: 60px 1fr 2fr; gap: 1rem; align-items: baseline; padding: 1.5rem 0; border-bottom: 1px solid var(--border); }
+  .skill-list h3, .skill-list p { margin: 0; }.skill-no { font: .72rem "JetBrains Mono"; color: var(--accent); }
+  .paper-list { border-top: 1px solid var(--border); }
+  .paper-list article { display: grid; grid-template-columns: 70px 1fr; gap: 1rem; padding: 2rem 0; border-bottom: 1px solid var(--border); }
+  .citation { font: 500 .72rem "JetBrains Mono"; color: var(--accent); }
+  .paper-list h3 { max-width: 850px; margin: 1.5rem 0 .5rem; font-size: clamp(1.5rem, 3vw, 2.4rem); }
+  .paper-list p { max-width: 760px; }
+  .timeline { margin-left: .4rem; border-left: 1px solid var(--border); }
+  .timeline article { position: relative; max-width: 780px; margin-left: 2rem; padding: .3rem 0 1rem; }
+  .timeline-dot { position: absolute; left: -2.38rem; top: .45rem; width: 12px; height: 12px; border: 3px solid var(--bg); border-radius: 50%; background: var(--accent); }
+  .timeline h3 { margin: 1rem 0 .25rem; font-size: clamp(1.5rem, 3vw, 2.3rem); }.timeline p { margin: .2rem 0; }.timeline-copy { color: var(--text-tertiary); }
+  .beyond { padding-block: 3rem; border-top: 1px solid var(--border); }.beyond .editorial { align-items: start; }.beyond p { margin: 0; }
+  .contact-inner { display: grid; grid-template-columns: 1.4fr 1fr; gap: 5rem; align-items: end; }
+  .contact h2 { max-width: 680px; margin: 1.2rem 0 0; font-size: clamp(2.5rem, 4.8vw, 4.35rem); line-height: 1; }
+  .contact .button { margin-top: 1rem; }
+  @media (max-width: 800px) { .hero { min-height: auto; grid-template-columns: minmax(0, 1fr); gap: 3rem; } .availability { margin-bottom: 9rem; }.identity-grid { grid-template-columns: 1fr 1fr; }.identity-grid > div { border-bottom: 1px solid var(--border); }.identity-grid > div:first-child { padding-left: 1.5rem; }.identity-grid .strip-mark { display: none; }.editorial, .contact-inner { grid-template-columns: 1fr; gap: 2.5rem; } .editorial .margin-note { display: none; }.project-grid { grid-template-columns: 1fr; } .project-grid .featured { grid-column: auto; } .skill-list article { grid-template-columns: 38px 1fr; } .skill-list p { grid-column: 2; } }
+  @media (max-width: 560px) { .paper-list article { grid-template-columns: 1fr; }.citation { display: none; } }
+  @media (max-width: 500px) { .hero h1 { font-size: clamp(2.55rem, 11vw, 2.95rem); line-height: 1; } .actions .button { width: 100%; }.availability { margin-bottom: 8rem; } }
+</style>

@@ -1,0 +1,24 @@
+---
+import AdminLayout from '../../layouts/AdminLayout.astro';
+import { createCmsClient } from '../../lib/cms/supabase';
+let totals = { posts: 0, published: 0, drafts: 0 };
+if (Astro.locals.cmsConfigured) {
+  const supabase = createCmsClient(Astro.request, Astro.cookies)!;
+  const { data } = await supabase.from('posts').select('status');
+  const posts = data ?? [];
+  totals = { posts: posts.length, published: posts.filter(p => p.status === 'published').length, drafts: posts.filter(p => p.status !== 'published').length };
+}
+---
+<AdminLayout title="Overview" description="Manage content without changing the portfolio design system.">
+  <div class="admin-content">
+    {!Astro.locals.cmsConfigured && <p class="notice"><strong>CMS foundation installed.</strong> Add Supabase credentials and run the migration to activate secure publishing.</p>}
+    <div class="grid">
+      <article class="panel metric"><span>ALL POSTS</span><strong>{totals.posts}</strong></article>
+      <article class="panel metric"><span>PUBLISHED</span><strong>{totals.published}</strong></article>
+      <article class="panel metric"><span>DRAFT / SCHEDULED</span><strong>{totals.drafts}</strong></article>
+    </div>
+    <section class="panel roadmap"><p class="meta-label">PROTECTED DESIGN CONTRACT</p><h2>Content can change. Components cannot.</h2><p>CMS records feed existing presentation components through validated fields. Editors cannot inject CSS, scripts, or arbitrary page structure.</p><a class="admin-button primary" href="/admin/posts/new">Create a post</a></section>
+  </div>
+</AdminLayout>
+<style>.roadmap{margin-top:16px}.roadmap h2{font:500 28px Space Grotesk;margin:.7rem 0}.roadmap p:not(.meta-label){max-width:680px;color:var(--muted);margin-bottom:22px}</style>
+

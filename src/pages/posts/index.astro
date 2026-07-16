@@ -1,0 +1,28 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import SiteNav from '../../components/SiteNav.astro';
+import SiteFooter from '../../components/SiteFooter.astro';
+import SignalLine from '../../components/SignalLine.astro';
+import { createCmsClient } from '../../lib/cms/supabase';
+import type { CmsPost } from '../../lib/cms/types';
+let posts: CmsPost[] = [];
+if (Astro.locals.cmsConfigured) {
+  const { data } = await createCmsClient(Astro.request, Astro.cookies)!.from('posts').select('*').eq('status','published').lte('published_at', new Date().toISOString()).order('published_at', { ascending: false });
+  posts = (data ?? []) as CmsPost[];
+}
+---
+<BaseLayout title="Posts — Sabit Al Alfi" description="Field notes from Sabit Al Alfi on explainable AI, research, engineering, and building practical software.">
+  <SiteNav />
+  <main id="main-content">
+    <header class="page-hero container"><p class="eyebrow">POSTS / FIELD NOTES</p><SignalLine /><h1 class="display">Ideas, experiments, and useful details.</h1><p>Notes from research, engineering, and the process of turning complex work into understandable systems.</p></header>
+    <section class="section"><div class="container">
+      {posts.length ? <div class="post-grid">{posts.map((post,index) => <article class:list={['post-card',{featured:post.featured || index === 0}]}>
+        {post.cover_url && <a class="cover" href={`/posts/${post.slug}`}><img src={post.cover_url} alt={post.cover_alt || ''} loading="lazy" /></a>}
+        <div class="post-copy"><div class="post-meta"><span>{post.tags[0] ?? 'Field note'}</span><time datetime={post.published_at ?? undefined}>{post.published_at ? new Date(post.published_at).toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'}) : ''}</time></div><h2 class="display"><a href={`/posts/${post.slug}`}>{post.title}</a></h2><p>{post.excerpt}</p><a class="read" href={`/posts/${post.slug}`}>Read field note →</a></div>
+      </article>)}</div> : <div class="empty"><span>TRANSMISSION / PENDING</span><h2 class="display">The first field note is being prepared.</h2><p>Published writing will appear here automatically.</p></div>}
+    </div></section>
+  </main>
+  <SiteFooter />
+</BaseLayout>
+<style>.post-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1rem}.post-card{border:1px solid var(--border);background:var(--surface)}.post-card.featured{grid-column:1/-1;display:grid;grid-template-columns:1fr 1fr}.cover{min-height:280px;background:var(--surface-hover);overflow:hidden}.cover img{display:block;width:100%;height:100%;object-fit:cover;filter:saturate(.8)}.post-copy{padding:clamp(1.5rem,4vw,2.8rem)}.post-meta{display:flex;justify-content:space-between;gap:1rem;font:.62rem JetBrains Mono;color:var(--accent);text-transform:uppercase}.post-copy h2{font-size:clamp(1.7rem,3.5vw,3rem);line-height:1.05;margin:1.2rem 0 .7rem}.post-copy p{color:var(--text-secondary)}.read{display:inline-flex;margin-top:1rem;font-weight:500}.read:hover{color:var(--accent)}.empty{max-width:720px;border-block:1px solid var(--border);padding:3rem 0}.empty span{font:.65rem JetBrains Mono;color:var(--accent)}.empty h2{font-size:clamp(2rem,4vw,3.5rem);margin:1rem 0}.empty p{color:var(--text-secondary)}@media(max-width:760px){.post-grid{grid-template-columns:1fr}.post-card.featured{grid-column:auto;display:block}.cover{display:block;min-height:220px}}</style>
+

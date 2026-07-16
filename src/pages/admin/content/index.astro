@@ -1,0 +1,20 @@
+---
+import AdminLayout from '../../../layouts/AdminLayout.astro';
+const modules = [
+  { title:'Home & profile', detail:'Headline, introduction, availability, portrait, résumé, and profile details.', status:'Available', href:'/admin/content/profile' },
+  { title:'Projects', detail:'Projects, descriptions, technologies, links, visibility, and ordering.', status:'Available', href:'/admin/projects' },
+  { title:'Research', detail:'Papers, authorship, abstracts, venues, publication links, and ordering.', status:'Available', href:'/admin/research' },
+  { title:'Education', detail:'SSC, HSC, degree records, results, institutions, and timeline order.', status:'Available', href:'/admin/content/education-skills' },
+  { title:'Certifications', detail:'Credentials, providers, progress status, links, ordering, and visibility.', status:'Available', href:'/admin/certifications' },
+  { title:'Skills & coursework', detail:'Capabilities, tools, subjects, ordering, and visibility.', status:'Available', href:'/admin/content/education-skills' },
+  { title:'Thesis & community', detail:'Thesis record, volunteering, organizations, and descriptions.', status:'Available', href:'/admin/content/thesis-community' },
+  { title:'Contact & social', detail:'Email, social profiles, contact copy, and availability details.', status:'Available', href:'/admin/content/contact-social' },
+  { title:'Settings & media', detail:'SEO defaults, social preview image, footer details, and reusable media uploads.', status:'Available', href:'/admin/content/settings-media' },
+  { title:'Experience & achievements', detail:'Roles, awards, hackathons, competitions, and research presentations.', status:'Available', href:'/admin/content/experience-achievements' },
+  { title:'Page sections', detail:'Visibility and display order for approved Home and About sections.', status:'Available', href:'/admin/content/sections' },
+];
+---
+<AdminLayout title="Portfolio content" description="Change what the portfolio says and shows without changing how it is designed.">
+  <div class="admin-content"><div class="content-grid">{modules.map(item => <article class:list={['panel','module',{available:item.href}]}><div><span class="meta-label">{item.status}</span><h2>{item.title}</h2><p>{item.detail}</p></div>{item.href ? <a class="admin-button primary" href={item.href}>Manage</a> : <span class="locked">STRUCTURE RESERVED</span>}</article>)}</div></div>
+</AdminLayout>
+<style>.content-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.module{min-height:220px;display:flex;flex-direction:column;justify-content:space-between}.module h2{font:500 25px Space Grotesk;margin:.7rem 0}.module p{color:var(--muted);max-width:480px}.module:not(.available){opacity:.62}.module .admin-button{align-self:flex-start}.locked{font:9px JetBrains Mono;letter-spacing:.1em;color:var(--muted)}@media(max-width:850px){.content-grid{grid-template-columns:1fr}}</style>

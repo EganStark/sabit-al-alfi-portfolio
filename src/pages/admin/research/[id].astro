@@ -1,0 +1,4 @@
+---
+import AdminLayout from '../../../layouts/AdminLayout.astro';import ResearchForm from '../../../components/admin/ResearchForm.astro';import{createCmsClient}from'../../../lib/cms/supabase';const{data}=await createCmsClient(Astro.request,Astro.cookies)!.from('research_papers').select('*').eq('id',Astro.params.id).single();if(!data)return Astro.redirect('/admin/research');
+---
+<AdminLayout title="Edit research paper"><div class="admin-content"><ResearchForm mode="edit" paper={data}/></div></AdminLayout>

@@ -1,0 +1,20 @@
+---
+import AdminLayout from '../../../layouts/AdminLayout.astro';
+import { createCmsClient } from '../../../lib/cms/supabase';
+import type { CmsPost } from '../../../lib/cms/types';
+let posts: CmsPost[] = [];
+if (Astro.locals.cmsConfigured) {
+  const { data } = await createCmsClient(Astro.request, Astro.cookies)!.from('posts').select('*').order('updated_at', { ascending: false });
+  posts = (data ?? []) as CmsPost[];
+}
+---
+<AdminLayout title="Posts" description="Draft, schedule, and publish field notes from one place.">
+  <div class="admin-content">
+    <div class="admin-actions"><a class="admin-button primary" href="/admin/posts/new">New post</a><a class="admin-button" href="/posts" target="_blank">View public archive ↗</a></div>
+    <div class="panel">
+      {posts.length ? <table class="table"><thead><tr><th>TITLE</th><th>STATUS</th><th>UPDATED</th><th>ACTIONS</th></tr></thead><tbody>{posts.map(post => <tr><td><strong>{post.title}</strong><br /><small>/{post.slug}</small></td><td><span class="status">{post.status}</span></td><td>{new Date(post.updated_at).toLocaleDateString('en-GB')}</td><td><div class="row-actions"><a href={`/admin/posts/${post.id}`}>Edit</a>{post.status === 'published' && <a href={`/posts/${post.slug}`} target="_blank">View ↗</a>}<form method="post" action={`/api/admin/posts/${post.id}/delete`} onsubmit="return confirm('Delete this post permanently?')"><button type="submit">Delete</button></form></div></td></tr>)}</tbody></table> : <p class="empty">No posts yet. Create the first field note when you are ready.</p>}
+    </div>
+  </div>
+</AdminLayout>
+<style>.row-actions{display:flex;gap:12px;align-items:center}.row-actions a,.row-actions button{border:0;background:none;padding:0;color:var(--muted);cursor:pointer}.row-actions a:hover,.row-actions button:hover{color:var(--accent)}.empty{color:var(--muted)}</style>
+

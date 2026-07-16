@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630">
+  <rect width="1200" height="630" fill="#0a0a0c"/>
+  <path d="M78 160h145l32-38 44 76 46-57 42 30 56-11h89l35-45 42 85 41-51 44 11h94" fill="none" stroke="#5eead4" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+  <text x="78" y="330" fill="#f2f2f3" font-family="Arial, sans-serif" font-size="92" font-weight="700">Sabit Al Alfi</text>
+  <text x="82" y="410" fill="#9a9aa2" font-family="Arial, sans-serif" font-size="38">Engineer · Explainable AI Researcher</text>
+  <text x="82" y="520" fill="#5eead4" font-family="monospace" font-size="24" letter-spacing="3">RESEARCH DEPTH / ENGINEERING RANGE</text>
+</svg>

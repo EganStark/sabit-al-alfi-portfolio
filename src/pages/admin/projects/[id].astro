@@ -1,0 +1,4 @@
+---
+import AdminLayout from '../../../layouts/AdminLayout.astro';import ProjectForm from '../../../components/admin/ProjectForm.astro';import{createCmsClient}from'../../../lib/cms/supabase';const{data}=await createCmsClient(Astro.request,Astro.cookies)!.from('projects').select('*').eq('id',Astro.params.id).single();if(!data)return Astro.redirect('/admin/projects');
+---
+<AdminLayout title="Edit project"><div class="admin-content"><ProjectForm mode="edit" project={data}/></div></AdminLayout>

@@ -1,0 +1,9 @@
+---
+import { createCmsClient } from '../lib/cms/supabase';
+interface Props{page:'home'|'about'}const{page}=Astro.props;let settings:any[]=[];if(Astro.locals.cmsConfigured){const{data}=await createCmsClient(Astro.request,Astro.cookies)!.from('page_sections').select('section_key,visible,sort_order').eq('page',page);settings=data??[]}
+---
+<script is:inline type="application/json" data-section-settings={page} set:html={JSON.stringify(settings)}></script>
+<script>
+  const keys={home:['home_about','home_projects','home_skills','home_research','home_contact'],about:['about_principles','about_skills','about_thesis','about_education','about_coursework','about_certifications','about_experience','about_community']};
+  document.querySelectorAll<HTMLScriptElement>('[data-section-settings]').forEach(node=>{const page=node.dataset.sectionSettings as keyof typeof keys,main=document.querySelector<HTMLElement>('main#main-content');if(!main)return;const settings=JSON.parse(node.textContent||'[]'),sections=Array.from(main.querySelectorAll<HTMLElement>(':scope > section')),managed=page==='home'?sections.slice(1):sections;main.style.display='flex';main.style.flexDirection='column';Array.from(main.children).forEach((child,index)=>{if(child instanceof HTMLElement)child.style.order=String(-100+index)});keys[page].forEach((key,index)=>{const section=managed[index],value=settings.find((item:any)=>item.section_key===key);if(!section||!value)return;section.style.order=String(value.sort_order);section.hidden=!value.visible})});
+</script>

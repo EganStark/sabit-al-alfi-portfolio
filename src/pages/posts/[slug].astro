@@ -1,0 +1,27 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import SiteNav from '../../components/SiteNav.astro';
+import SiteFooter from '../../components/SiteFooter.astro';
+import { createCmsClient } from '../../lib/cms/supabase';
+import type { CmsPost } from '../../lib/cms/types';
+const { slug } = Astro.params;
+let post: CmsPost | null = null;
+if (Astro.locals.cmsConfigured) {
+  const { data } = await createCmsClient(Astro.request, Astro.cookies)!.from('posts').select('*').eq('slug',slug).eq('status','published').lte('published_at',new Date().toISOString()).maybeSingle();
+  post = data as CmsPost | null;
+}
+if (!post) return new Response('Post not found', { status: 404 });
+const paragraphs = post.body.split(/\n\s*\n/).map(item => item.trim()).filter(Boolean);
+---
+<BaseLayout title={`${post.title} — Sabit Al Alfi`} description={post.excerpt}>
+  <SiteNav />
+  <main id="main-content">
+    <article class="article container"><header><a class="back" href="/posts">← All field notes</a><div class="meta"><span>{post.tags.join(' / ') || 'FIELD NOTE'}</span><time datetime={post.published_at ?? undefined}>{post.published_at ? new Date(post.published_at).toLocaleDateString('en-GB',{day:'2-digit',month:'long',year:'numeric'}) : ''}</time></div><h1 class="display">{post.title}</h1><p class="dek">{post.excerpt}</p></header>
+      {post.cover_url && <figure><img src={post.cover_url} alt={post.cover_alt || ''} /><figcaption>{post.cover_alt}</figcaption></figure>}
+      <div class="body">{paragraphs.map(paragraph => <p>{paragraph}</p>)}</div>
+    </article>
+  </main>
+  <SiteFooter />
+</BaseLayout>
+<style>.article{padding-block:clamp(4rem,9vw,8rem)}.article header{max-width:900px}.back{display:inline-flex;min-height:44px;align-items:center;color:var(--text-secondary)}.back:hover{color:var(--accent)}.meta{display:flex;justify-content:space-between;gap:1rem;margin-top:3rem;font:.65rem JetBrains Mono;color:var(--accent);text-transform:uppercase}.article h1{font-size:clamp(3rem,7vw,6.4rem);line-height:.96;margin:1.3rem 0}.dek{max-width:760px;font-size:clamp(1.1rem,2vw,1.35rem);color:var(--text-secondary)}figure{margin:clamp(3rem,7vw,6rem) 0}figure img{display:block;width:100%;max-height:720px;object-fit:cover;filter:saturate(.82)}figcaption{margin-top:.6rem;font:.6rem JetBrains Mono;color:var(--text-tertiary)}.body{max-width:760px;margin-inline:auto;font-size:clamp(1.05rem,1.5vw,1.18rem);line-height:1.85}.body p{white-space:pre-wrap;margin:0 0 1.7rem}@media(max-width:600px){.meta{display:grid}.article h1{font-size:clamp(2.7rem,13vw,4.2rem)}}</style>
+

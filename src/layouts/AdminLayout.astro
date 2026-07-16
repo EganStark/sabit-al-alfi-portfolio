@@ -1,0 +1,72 @@
+---
+import '../styles/global.css';
+import BackToTop from '../components/BackToTop.astro';
+interface Props { title: string; description?: string }
+const { title, description } = Astro.props;
+const user = Astro.locals.cmsUser;
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <meta name="robots" content="noindex,nofollow" />
+    <title>{title} — Portfolio CMS</title>
+    <link rel="icon" href="/favicon.svg" />
+  </head>
+  <body>
+    <a class="skip-link" href="#admin-main">Skip to main content</a>
+    <aside class="sidebar">
+      <a class="admin-brand" href="/admin"><span>CMS</span><strong>SABiT ALFi</strong></a>
+      <nav aria-label="CMS navigation">
+        <a href="/admin" aria-current={Astro.url.pathname === '/admin' ? 'page' : undefined}>Overview</a>
+        <a href="/admin/posts" aria-current={Astro.url.pathname.startsWith('/admin/posts') ? 'page' : undefined}>Posts</a>
+        <p class="nav-group">PORTFOLIO CONTENT</p>
+        <a href="/admin/content" aria-current={Astro.url.pathname === '/admin/content' ? 'page' : undefined}>Content overview</a>
+        <a class="nested" href="/admin/content/profile" aria-current={Astro.url.pathname === '/admin/content/profile' ? 'page' : undefined}>Home & profile</a>
+        <a class="nested" href="/admin/projects" aria-current={Astro.url.pathname.startsWith('/admin/projects') ? 'page' : undefined}>Projects</a>
+        <a class="nested" href="/admin/research" aria-current={Astro.url.pathname.startsWith('/admin/research') ? 'page' : undefined}>Research</a>
+        <a class="nested" href="/admin/content/education-skills" aria-current={Astro.url.pathname === '/admin/content/education-skills' ? 'page' : undefined}>Education & skills</a>
+        <a class="nested" href="/admin/certifications" aria-current={Astro.url.pathname.startsWith('/admin/certifications') ? 'page' : undefined}>Certifications</a>
+        <a class="nested" href="/admin/content/thesis-community" aria-current={Astro.url.pathname === '/admin/content/thesis-community' ? 'page' : undefined}>Thesis & community</a>
+        <a class="nested" href="/admin/content/contact-social" aria-current={Astro.url.pathname === '/admin/content/contact-social' ? 'page' : undefined}>Contact & social</a>
+        <a class="nested" href="/admin/content/settings-media" aria-current={Astro.url.pathname === '/admin/content/settings-media' ? 'page' : undefined}>Settings & media</a>
+        <a class="nested" href="/admin/content/experience-achievements" aria-current={Astro.url.pathname === '/admin/content/experience-achievements' ? 'page' : undefined}>Experience & awards</a>
+        <a class="nested" href="/admin/content/sections" aria-current={Astro.url.pathname === '/admin/content/sections' ? 'page' : undefined}>Page sections</a>
+      </nav>
+      <div class="sidebar-foot">
+        <a href="/" target="_blank">View portfolio ↗</a>
+        {user && <form method="post" action="/api/admin/logout"><button type="submit">Sign out →</button></form>}
+      </div>
+    </aside>
+    <main id="admin-main">
+      <header class="topbar"><div><p>PORTFOLIO / CONTROL ROOM</p><h1>{title}</h1>{description && <span>{description}</span>}</div><span class="environment">{Astro.locals.cmsConfigured ? 'CONNECTED' : 'SETUP REQUIRED'}</span></header>
+      <slot />
+    </main>
+    <BackToTop />
+  </body>
+</html>
+
+<style is:global>
+  :root{--ink:#f2f2f3;--muted:#9898a2;--bg:#09090b;--panel:#111114;--line:#29292f;--accent:#5eead4;color-scheme:dark}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.6 Inter,sans-serif}a{color:inherit;text-decoration:none}button,input,textarea,select{font:inherit}.skip-link{position:fixed;transform:translateY(-150%)}.skip-link:focus{transform:none}.sidebar{position:fixed;inset:0 auto 0 0;width:240px;padding:28px 22px;border-right:1px solid var(--line);background:#0c0c0f;display:flex;flex-direction:column;overflow-y:auto}.admin-brand{display:grid;margin-bottom:38px}.admin-brand span,.topbar p,.environment,.field label,.meta-label,.nav-group{font:500 10px JetBrains Mono;letter-spacing:.13em;color:var(--accent)}.admin-brand strong{font:500 18px Space Grotesk}.sidebar nav{display:grid;gap:4px}.sidebar nav a,.sidebar nav>span{padding:9px 12px;border:1px solid transparent;color:var(--muted)}.sidebar nav a:hover,.sidebar nav a[aria-current=page]{border-color:var(--line);background:var(--panel);color:var(--ink)}.sidebar nav>span{display:flex;justify-content:space-between;opacity:.55}.sidebar nav .nested{padding-left:22px;font-size:13px}.nav-group{margin:24px 12px 5px}.sidebar small{font:9px JetBrains Mono;text-transform:uppercase}.sidebar-foot{margin-top:auto;display:grid;gap:10px;border-top:1px solid var(--line);padding-top:18px}.sidebar-foot button{border:0;padding:0;background:transparent;color:var(--muted);cursor:pointer}.sidebar-foot a:hover,.sidebar-foot button:hover{color:var(--accent)}main{margin-left:240px;min-height:100vh}.topbar{display:flex;justify-content:space-between;align-items:start;gap:20px;padding:34px clamp(24px,4vw,58px);border-bottom:1px solid var(--line)}.topbar p{margin:0}.topbar h1{font:500 clamp(28px,4vw,44px)/1 Space Grotesk;margin:8px 0}.topbar>div>span{color:var(--muted)}.environment{border:1px solid var(--line);padding:7px 10px}.admin-content{padding:clamp(24px,4vw,58px)}.panel{border:1px solid var(--line);background:var(--panel);padding:24px}.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}.metric strong{display:block;font:500 32px Space Grotesk}.metric span{color:var(--muted)}.admin-actions{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:24px}.admin-button{min-height:42px;padding:9px 14px;border:1px solid var(--line);background:var(--panel);color:var(--ink);cursor:pointer}.admin-button.primary{border-color:var(--accent);background:var(--accent);color:#07110f}.admin-button.danger{color:#ff9b9b}.admin-button:hover{border-color:var(--accent)}.table{width:100%;border-collapse:collapse}.table th,.table td{text-align:left;padding:14px 10px;border-bottom:1px solid var(--line);vertical-align:top}.table th{font:500 10px JetBrains Mono;letter-spacing:.1em;color:var(--muted)}.status{font:500 10px JetBrains Mono;letter-spacing:.08em;text-transform:uppercase;color:var(--accent)}.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}.field{display:grid;gap:7px}.field.full{grid-column:1/-1}.field input,.field textarea,.field select{width:100%;border:1px solid var(--line);background:#0b0b0e;color:var(--ink);padding:11px 12px}.field textarea{min-height:260px;resize:vertical}.field input:focus,.field textarea:focus,.field select:focus{outline:1px solid var(--accent);border-color:var(--accent)}.check{display:flex;align-items:center;gap:8px;color:var(--muted)}.notice{border-left:2px solid var(--accent);background:var(--panel);padding:16px 18px;color:var(--muted)}.notice strong{color:var(--ink)}@media(max-width:760px){.sidebar{position:static;width:auto;border-right:0;border-bottom:1px solid var(--line)}.sidebar nav{grid-template-columns:repeat(2,1fr)}.nav-group{grid-column:1/-1}.sidebar-foot{display:none}main{margin:0}.grid,.form-grid{grid-template-columns:1fr}.field.full{grid-column:auto}.table{display:block;overflow:auto}.topbar{padding:24px}.admin-content{padding:24px}}
+</style>
+
+<style is:global>
+  @media (max-width: 760px) {
+    .sidebar-foot {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 24px;
+    }
+
+    .sidebar-foot form { margin: 0; }
+
+    .sidebar-foot button {
+      min-height: 44px;
+      padding: 0 12px;
+      border: 1px solid var(--line);
+      color: var(--ink);
+    }
+  }
+</style>

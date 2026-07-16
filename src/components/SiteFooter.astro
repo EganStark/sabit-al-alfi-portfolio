@@ -1,0 +1,19 @@
+---
+import { createCmsClient } from '../lib/cms/supabase';
+let settings={author_name:'Sabit Al Alfi',footer_tagline:'Built with clarity and care.'};
+if(Astro.locals.cmsConfigured){const{data}=await createCmsClient(Astro.request,Astro.cookies)!.from('site_settings').select('author_name,footer_tagline').eq('id','primary').maybeSingle();if(data)settings={...settings,...data}}
+---
+<footer>
+  <div class="container footer-inner">
+    <a class="namespace" href="/" aria-label="Sabit Al Alfi, home"><span>[</span>SAB<span>i</span>T<em>::</em>ALF<span>i</span><span>]</span></a>
+    <div class="footer-meta"><span>© {new Date().getFullYear()} {settings.author_name}</span><span>{settings.footer_tagline}</span></div>
+  </div>
+</footer>
+<style>
+  footer { border-top: 1px solid var(--border); padding: 2.2rem 0; color: var(--text-tertiary); }
+  .footer-inner { display: flex; justify-content: space-between; gap: 2rem; align-items: end; }
+  .namespace { min-height: 44px; display: inline-flex; align-items: center; font: 500 .82rem "JetBrains Mono", monospace; letter-spacing: .07em; color: var(--text-primary); }
+  .namespace span { color: var(--accent); }.namespace em { margin-inline: .1rem; color: var(--text-tertiary); font-style: normal; }
+  .footer-meta { display: grid; gap: .3rem; text-align: right; font: .68rem "JetBrains Mono", monospace; }
+  @media (max-width: 520px) { .footer-inner { align-items: start; flex-direction: column; }.footer-meta { text-align: left; } }
+</style>

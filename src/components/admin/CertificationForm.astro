@@ -1,0 +1,18 @@
+---
+interface Certification { id?: string; title?: string; provider?: string; status?: string; description?: string; credential_url?: string | null; issued_at?: string | null; sort_order?: number; visible?: boolean }
+interface Props { certification?: Certification; mode: 'create' | 'edit' }
+const { certification = {}, mode } = Astro.props;
+const action = mode === 'create' ? '/api/admin/certifications/new' : `/api/admin/certifications/${certification.id}`;
+---
+<form class="panel form-grid" method="post" action={action}>
+  <div class="field"><label for="title">CERTIFICATION TITLE</label><input id="title" name="title" value={certification.title ?? ''} maxlength="160" required /></div>
+  <div class="field"><label for="provider">PROVIDER</label><input id="provider" name="provider" value={certification.provider ?? ''} maxlength="120" required /></div>
+  <div class="field"><label for="status">STATUS</label><select id="status" name="status"><option value="completed" selected={certification.status === 'completed'}>Completed</option><option value="in_progress" selected={certification.status === 'in_progress' || !certification.status}>In progress</option></select></div>
+  <div class="field"><label for="sort_order">DISPLAY ORDER</label><input id="sort_order" name="sort_order" type="number" min="0" max="999" value={certification.sort_order ?? 0} /></div>
+  <div class="field"><label for="issued_at">ISSUE DATE</label><input id="issued_at" name="issued_at" type="date" value={certification.issued_at ?? ''} /></div>
+  <div class="field"><label for="credential_url">CREDENTIAL URL</label><input id="credential_url" name="credential_url" type="url" value={certification.credential_url ?? ''} placeholder="https://..." /></div>
+  <div class="field full"><label for="description">DESCRIPTION</label><textarea id="description" name="description" maxlength="500" rows="5">{certification.description ?? ''}</textarea></div>
+  <label class="check field full"><input type="checkbox" name="visible" value="true" checked={certification.visible ?? true} /> Show on the public About page</label>
+  <div class="field full admin-actions"><button class="admin-button primary" type="submit">{mode === 'create' ? 'Save certification' : 'Update certification'}</button><a class="admin-button" href="/admin/certifications">Cancel</a></div>
+</form>
+

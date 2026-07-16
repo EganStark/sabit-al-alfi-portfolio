@@ -1,0 +1,61 @@
+<button class="back-to-top" type="button" aria-label="Back to top" title="Back to top" data-back-to-top>
+  <span aria-hidden="true">↑</span>
+  <span class="label">TOP</span>
+</button>
+
+<script>
+  const button = document.querySelector<HTMLButtonElement>('[data-back-to-top]');
+
+  if (button) {
+    const updateVisibility = () => {
+      button.classList.toggle('visible', window.scrollY > 480);
+    };
+
+    updateVisibility();
+    window.addEventListener('scroll', updateVisibility, { passive: true });
+    button.addEventListener('click', () => {
+      window.scrollTo({
+        top: 0,
+        behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth',
+      });
+    });
+  }
+</script>
+
+<style>
+  .back-to-top {
+    position: fixed;
+    right: clamp(1rem, 2.5vw, 2rem);
+    bottom: clamp(1rem, 2.5vw, 2rem);
+    z-index: 90;
+    display: inline-flex;
+    min-width: 48px;
+    min-height: 48px;
+    align-items: center;
+    justify-content: center;
+    gap: .45rem;
+    padding: .7rem .85rem;
+    border: 1px solid var(--border, var(--line, #29292f));
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--bg, #09090b) 88%, transparent);
+    color: var(--text-primary, var(--ink, #f2f2f3));
+    box-shadow: 0 12px 32px rgb(0 0 0 / .18);
+    font: 600 .65rem/1 "JetBrains Mono", monospace;
+    letter-spacing: .12em;
+    cursor: pointer;
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(12px);
+    backdrop-filter: blur(12px);
+    transition: opacity .2s ease, transform .2s ease, border-color .2s ease, color .2s ease;
+  }
+
+  .back-to-top span:first-child { color: var(--accent); font-size: 1rem; }
+  .back-to-top.visible { opacity: 1; pointer-events: auto; transform: translateY(0); }
+  .back-to-top:hover { border-color: var(--accent); color: var(--accent); }
+
+  @media (max-width: 520px) {
+    .back-to-top { min-width: 46px; min-height: 46px; padding: 0; }
+    .back-to-top .label { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+  }
+</style>

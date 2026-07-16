@@ -1,0 +1,18 @@
+---
+import AdminLayout from '../../layouts/AdminLayout.astro';
+if (Astro.locals.cmsUser) return Astro.redirect('/admin');
+const error = Astro.url.searchParams.get('error');
+---
+<AdminLayout title="Owner sign in" description="Protected access for portfolio publishing.">
+  <div class="admin-content login-wrap">
+    {!Astro.locals.cmsConfigured ? <div class="notice"><strong>Connect Supabase first.</strong><br />Copy <code>.env.example</code> to <code>.env</code>, add the project URL and publishable key, then run the included SQL migration.</div> :
+    <form class="panel login" method="post" action="/api/admin/login">
+      {error && <p class="error">The email or password was not accepted.</p>}
+      <div class="field"><label for="email">EMAIL</label><input id="email" name="email" type="email" autocomplete="email" required /></div>
+      <div class="field"><label for="password">PASSWORD</label><input id="password" name="password" type="password" autocomplete="current-password" required /></div>
+      <button class="admin-button primary" type="submit">Enter CMS</button>
+    </form>}
+  </div>
+</AdminLayout>
+<style>.login-wrap{max-width:620px}.login{display:grid;gap:18px}.error{margin:0;color:#ff9b9b}</style>
+

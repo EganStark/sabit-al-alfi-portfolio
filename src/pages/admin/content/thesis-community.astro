@@ -1,0 +1,40 @@
+---
+import AdminLayout from '../../../layouts/AdminLayout.astro';
+import { createCmsClient } from '../../../lib/cms/supabase';
+const cms = createCmsClient(Astro.request, Astro.cookies)!;
+const [thesisResult, communityResult] = await Promise.all([
+  cms.from('thesis_content').select('*').eq('id','primary').maybeSingle(),
+  cms.from('community_entries').select('*').order('sort_order'),
+]);
+const thesis = thesisResult.data ?? {};
+const entries = communityResult.data ?? [];
+---
+<AdminLayout title="Thesis & community" description="Manage the thesis record and community work without changing their public presentation.">
+  <div class="admin-content content-stack">
+    <section><div class="section-title"><div><span class="meta-label">FEATURED ACADEMIC WORK</span><h2>Undergraduate thesis</h2></div><p>This singleton record feeds the existing thesis panel on the About page.</p></div>
+      <form class="panel form-grid" method="post" action="/api/admin/content/thesis">
+        <div class="field full"><label>SECTION HEADLINE</label><input name="section_headline" value={thesis.section_headline ?? ''} required /></div>
+        <div class="field"><label>THESIS TITLE</label><input name="title" value={thesis.title ?? ''} required /></div><div class="field"><label>STATUS</label><input name="status" value={thesis.status ?? 'Completed'} required /></div>
+        <div class="field full"><label>SUBTITLE / SUMMARY</label><textarea name="subtitle" maxlength="600" required>{thesis.subtitle ?? ''}</textarea></div>
+        <div class="field"><label>INSTITUTION</label><input name="institution" value={thesis.institution ?? ''} required /></div><div class="field"><label>DISCIPLINE</label><input name="discipline" value={thesis.discipline ?? ''} required /></div>
+        <div class="field"><label>SUPERVISOR</label><input name="supervisor" value={thesis.supervisor ?? ''} required /></div><div class="field"><label>YEAR</label><input name="year" type="number" min="1900" max="2200" value={thesis.year ?? 2025} required /></div>
+        <div class="field full"><label>RELATED PAGE OR EXTERNAL URL</label><input name="related_url" value={thesis.related_url ?? '/projects'} /></div>
+        <label class="check field full"><input type="checkbox" name="visible" value="true" checked={thesis.visible ?? true} /> Show thesis section publicly</label>
+        <div class="field full"><button class="admin-button primary">Save thesis</button></div>
+      </form>
+    </section>
+    <section><div class="section-title"><div><span class="meta-label">BEYOND THE CODE</span><h2>Community & volunteering</h2></div><p>Add, reorder, hide, or remove community records.</p></div>
+      <div class="record-stack">
+        {[...entries, {id:'new',organization:'',role_period:'',description:'',url:'',sort_order:entries.length + 1,visible:true}].map(item =>
+          <form class="panel entry-form" method="post" action={`/api/admin/content/community/${item.id}`}>
+            <div class="field"><label>ORGANIZATION</label><input name="organization" value={item.organization} required /></div><div class="field"><label>ROLE / PERIOD</label><input name="role_period" value={item.role_period} /></div>
+            <div class="field wide"><label>DESCRIPTION</label><input name="description" value={item.description} maxlength="500" /></div><div class="field"><label>OPTIONAL URL</label><input name="url" type="url" value={item.url ?? ''} /></div>
+            <div class="field order"><label>ORDER</label><input name="sort_order" type="number" min="0" value={item.sort_order} /></div><label class="check"><input type="checkbox" name="visible" value="true" checked={item.visible} /> Public</label>
+            <div class="record-actions"><button class="admin-button primary">{item.id === 'new' ? 'Add entry' : 'Save'}</button>{item.id !== 'new' && <button class="admin-button danger confirm-delete" name="intent" value="delete" formnovalidate data-confirm="Delete this community entry?">Delete</button>}</div>
+          </form>)}
+      </div>
+    </section>
+  </div>
+</AdminLayout>
+<script>document.querySelectorAll<HTMLButtonElement>('.confirm-delete').forEach(button=>button.addEventListener('click',event=>{if(!window.confirm(button.dataset.confirm??'Delete this record?'))event.preventDefault()}));</script>
+<style>.content-stack{display:grid;gap:56px}.section-title{display:flex;justify-content:space-between;gap:24px;align-items:end;margin-bottom:16px}.section-title h2{font:500 30px Space Grotesk;margin:.35rem 0 0}.section-title p{max-width:560px;color:var(--muted);margin:0}.record-stack{display:grid;gap:10px}.entry-form{display:grid;grid-template-columns:1.1fr .8fr 1.5fr 1fr 80px;gap:12px;align-items:end}.wide{min-width:0}.order input{min-width:65px}.record-actions{display:flex;gap:8px}@media(max-width:1200px){.entry-form{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:650px){.section-title{display:block}.section-title p{margin-top:.6rem}.entry-form{grid-template-columns:1fr}}</style>

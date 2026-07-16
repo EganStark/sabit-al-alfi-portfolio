@@ -1,0 +1,52 @@
+<div class="trace" aria-hidden="true">
+  <div class="binary-field">
+    <span><b>S</b> 010<span class="bit">1</span>0011</span>
+    <span><b>A</b> 0100000<span class="bit">1</span></span>
+    <span><b>B</b> 010000<span class="bit">1</span>0</span>
+    <span><b>I</b> 0100<span class="bit">1</span>001</span>
+    <span><b>T</b> 010<span class="bit">1</span>0100</span>
+  </div>
+  <div class="trace-label top">RAW SIGNAL / 01</div>
+  <svg viewBox="0 0 760 300" preserveAspectRatio="none">
+    <g class="grid">
+      <path d="M0 50H760M0 100H760M0 150H760M0 200H760M0 250H760" />
+      <path d="M95 0V300M190 0V300M285 0V300M380 0V300M475 0V300M570 0V300M665 0V300" />
+    </g>
+    <path class="baseline" d="M0 178H760" />
+    <path class="wave" pathLength="1" d="M0 178 C42 178 47 176 72 176 S105 175 122 172 S145 105 162 168 S195 177 224 174 S252 151 268 170 S304 178 333 177 S365 177 385 175 S413 70 435 164 S475 178 510 175 S548 128 568 170 S610 178 644 176 S690 174 760 174" />
+    <g class="points"><circle cx="162" cy="168" r="4"/><circle cx="435" cy="164" r="4"/><circle cx="568" cy="170" r="4"/></g>
+  </svg>
+  <div class="trace-label bottom">BINARY DATA → INTERPRETATION → ENGINEERING</div>
+</div>
+<style>
+  .trace { position: absolute; z-index: -1; right: 0; bottom: 1.5rem; width: min(60vw, 740px); color: var(--accent); opacity: .64; pointer-events: none; }
+  svg { display: block; width: 100%; height: 300px; overflow: visible; }
+  .grid path { fill: none; stroke: var(--border); stroke-width: 1; vector-effect: non-scaling-stroke; }
+  .baseline { fill: none; stroke: var(--text-tertiary); stroke-width: 1; stroke-dasharray: 3 7; vector-effect: non-scaling-stroke; }
+  .wave { fill: none; stroke: currentColor; stroke-width: 2; vector-effect: non-scaling-stroke; stroke-dasharray: 1; stroke-dashoffset: 1; animation: trace-in 1.4s ease-out .15s forwards; }
+  .points { fill: var(--bg); stroke: currentColor; stroke-width: 2; }
+  .trace-label { position: absolute; font: 500 .58rem "JetBrains Mono", monospace; letter-spacing: .12em; color: var(--text-tertiary); }
+  .top { right: 0; bottom: -2.25rem; }.bottom { right: 0; bottom: .65rem; padding: .3rem .45rem; background: var(--bg); }
+  .binary-field { position: absolute; top: -18rem; right: 0; display: grid; grid-template-columns: repeat(5, auto); gap: 1.25rem; padding: .75rem .9rem; border-block: 1px solid var(--border); background: color-mix(in srgb, var(--bg), transparent 4%); font: 500 .68rem/1 "JetBrains Mono", monospace; letter-spacing: .14em; color: var(--text-primary); opacity: 1; animation: data-shift 7s ease-in-out infinite alternate; }
+  .binary-field > span { white-space: nowrap; }.binary-field b { margin-right: .45rem; color: var(--accent); font-weight: 500; }.binary-field .bit { color: var(--text-primary); font-weight: 700; }
+  @keyframes trace-in { to { stroke-dashoffset: 0; } }
+  @keyframes data-shift { from { transform: translateX(0); opacity: .84; } to { transform: translateX(-8px); opacity: 1; } }
+  @media (max-width: 800px) {
+    .trace { bottom: 3rem; width: 92vw; opacity: .48; }
+    .binary-field {
+      top: -5rem;
+      right: 0;
+      max-width: calc(100vw - 2rem);
+      grid-template-columns: repeat(5, auto);
+      justify-content: end;
+      gap: .55rem;
+      padding: .65rem .7rem;
+      font-size: .52rem;
+      letter-spacing: .08em;
+    }
+    .binary-field b { margin-right: .25rem; }
+    .bottom { max-width: 220px; text-align: right; }
+    .top { text-align: right; }
+  }
+  @media (prefers-reduced-motion: reduce) { .wave { stroke-dashoffset: 0; }.binary-field { animation: none; } }
+</style>

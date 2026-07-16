@@ -1,0 +1,55 @@
+---
+import AdminLayout from '../../../layouts/AdminLayout.astro';
+import { createCmsClient } from '../../../lib/cms/supabase';
+const cms = createCmsClient(Astro.request, Astro.cookies)!;
+const [educationResult, skillResult, courseworkResult] = await Promise.all([
+  cms.from('education_records').select('*').order('sort_order'),
+  cms.from('skill_groups').select('*').order('sort_order'),
+  cms.from('coursework').select('*').order('sort_order'),
+]);
+const education = educationResult.data ?? [];
+const skillGroups = skillResult.data ?? [];
+const coursework = courseworkResult.data ?? [];
+---
+<AdminLayout title="Education, skills & coursework" description="Manage the structured records shown on the About page.">
+  <div class="admin-content content-stack">
+    <section><div class="section-title"><div><span class="meta-label">ACADEMIC TIMELINE</span><h2>Education</h2></div><p>SSC, HSC, degree records, results, and display order.</p></div>
+      <div class="record-stack">
+        {[...education, { id:'new', period:'', title:'', institution:'', detail:'', result:'', sort_order:education.length + 1, visible:true }].map(item =>
+          <form class="panel compact-form" method="post" action={`/api/admin/content/education/${item.id}`}>
+            <div class="field"><label>PERIOD</label><input name="period" value={item.period} required /></div><div class="field"><label>QUALIFICATION</label><input name="title" value={item.title} required /></div>
+            <div class="field"><label>INSTITUTION</label><input name="institution" value={item.institution} required /></div><div class="field"><label>DETAIL</label><input name="detail" value={item.detail} /></div>
+            <div class="field"><label>RESULT</label><input name="result" value={item.result} /></div><div class="field order"><label>ORDER</label><input type="number" name="sort_order" min="0" value={item.sort_order} /></div>
+            <label class="check"><input type="checkbox" name="visible" value="true" checked={item.visible} /> Public</label><div class="record-actions"><button class="admin-button primary">{item.id === 'new' ? 'Add education' : 'Save'}</button>{item.id !== 'new' && <button class="admin-button danger confirm-delete" name="intent" value="delete" formnovalidate data-confirm="Delete this education record?">Delete</button>}</div>
+          </form>)}
+      </div>
+    </section>
+    <section><div class="section-title"><div><span class="meta-label">CAPABILITIES</span><h2>Skill groups</h2></div><p>Comma-separated skills are rendered inside the existing capability cards.</p></div>
+      <div class="record-stack">
+        {[...skillGroups, { id:'new', title:'', skills:[], sort_order:skillGroups.length + 1, visible:true }].map(item =>
+          <form class="panel compact-form skill-form" method="post" action={`/api/admin/content/skills/${item.id}`}>
+            <div class="field"><label>GROUP TITLE</label><input name="title" value={item.title} required /></div><div class="field wide"><label>SKILLS (COMMA SEPARATED)</label><input name="skills" value={item.skills.join(', ')} required /></div>
+            <div class="field order"><label>ORDER</label><input type="number" name="sort_order" min="0" value={item.sort_order} /></div><label class="check"><input type="checkbox" name="visible" value="true" checked={item.visible} /> Public</label>
+            <div class="record-actions"><button class="admin-button primary">{item.id === 'new' ? 'Add group' : 'Save'}</button>{item.id !== 'new' && <button class="admin-button danger confirm-delete" name="intent" value="delete" formnovalidate data-confirm="Delete this skill group?">Delete</button>}</div>
+          </form>)}
+      </div>
+    </section>
+    <section><div class="section-title"><div><span class="meta-label">SELECTED SUBJECTS</span><h2>Coursework</h2></div><p>Keep this selective so the public page stays concise.</p></div>
+      <div class="course-grid">
+        {[...coursework, { id:'new', title:'', sort_order:coursework.length + 1, visible:true }].map(item =>
+          <form class="panel course-form" method="post" action={`/api/admin/content/coursework/${item.id}`}>
+            <div class="field"><label>COURSE</label><input name="title" value={item.title} required /></div><div class="field order"><label>ORDER</label><input type="number" name="sort_order" min="0" value={item.sort_order} /></div>
+            <label class="check"><input type="checkbox" name="visible" value="true" checked={item.visible} /> Public</label><div class="record-actions"><button class="admin-button primary">{item.id === 'new' ? 'Add' : 'Save'}</button>{item.id !== 'new' && <button class="admin-button danger confirm-delete" name="intent" value="delete" formnovalidate data-confirm="Delete this course?">Delete</button>}</div>
+          </form>)}
+      </div>
+    </section>
+  </div>
+</AdminLayout>
+<script>
+  document.querySelectorAll<HTMLButtonElement>('.confirm-delete').forEach(button => {
+    button.addEventListener('click', event => {
+      if (!window.confirm(button.dataset.confirm ?? 'Delete this record?')) event.preventDefault();
+    });
+  });
+</script>
+<style>.content-stack{display:grid;gap:56px}.section-title{display:flex;justify-content:space-between;gap:24px;align-items:end;margin-bottom:16px}.section-title h2{font:500 30px Space Grotesk;margin:.35rem 0 0}.section-title p{max-width:560px;color:var(--muted);margin:0}.record-stack{display:grid;gap:10px}.compact-form{display:grid;grid-template-columns:.7fr 1.2fr 1.2fr 1fr .8fr 90px;gap:12px;align-items:end}.skill-form{grid-template-columns:1fr 2fr 90px auto auto}.wide{min-width:0}.order input{min-width:70px}.check{align-self:center}.record-actions{display:flex;gap:8px;align-items:end}.course-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.course-form{display:grid;grid-template-columns:1fr 72px;gap:12px;align-items:end}.course-form .check,.course-form .record-actions{grid-column:auto}@media(max-width:1200px){.compact-form,.skill-form{grid-template-columns:repeat(2,minmax(0,1fr))}.course-grid{grid-template-columns:1fr}}@media(max-width:650px){.section-title{display:block}.section-title p{margin-top:.6rem}.compact-form,.skill-form,.course-form{grid-template-columns:1fr}.course-form .check,.course-form .record-actions{grid-column:auto}}</style>

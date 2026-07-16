@@ -1,0 +1,56 @@
+---
+const path = Astro.url.pathname;
+const links: string[][] = [
+  ['/', 'Home'],
+  ['/about', 'About'],
+  ['/projects', 'Projects'],
+  ['/research', 'Research'],
+  ['/posts', 'Posts'],
+  ['/contact', 'Contact'],
+];
+const active = (href: string) => href === '/' ? path === '/' : path.startsWith(href);
+---
+<header class="site-nav">
+  <nav class="container nav-inner" aria-label="Main navigation">
+    <a class="brand" href="/" aria-label="Sabit Al Alfi, home"><span class="brand-bar" aria-hidden="true"></span><span class="brand-lines"><strong>SAB<span>i</span>T</strong><strong>ALF<span>i</span></strong></span></a>
+    <div class="desktop-links">
+      {links.map(([href, label]) => <a href={href} aria-current={active(href) ? 'page' : undefined}>{label}</a>)}
+    </div>
+    <div class="nav-actions">
+      {Astro.locals.cmsUser && <a class="admin-shortcut" href="/admin" aria-label="Open portfolio admin dashboard" title="Admin dashboard">
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1"></rect><rect x="14" y="3" width="7" height="7" rx="1"></rect><rect x="3" y="14" width="7" height="7" rx="1"></rect><rect x="14" y="14" width="7" height="7" rx="1"></rect></svg>
+      </a>}
+      <button class="theme-toggle" type="button" aria-label="Toggle color theme" aria-pressed="false">◐</button>
+      <details class="mobile-menu">
+        <summary aria-label="Open navigation"><span></span><span></span></summary>
+        <div class="mobile-panel">{links.map(([href, label]) => <a href={href} aria-current={active(href) ? 'page' : undefined}>{label}</a>)}</div>
+      </details>
+    </div>
+  </nav>
+</header>
+<script>
+  document.querySelectorAll<HTMLButtonElement>('.theme-toggle').forEach(button => button.addEventListener('click', () => {
+    const root = document.documentElement;
+    root.classList.toggle('dark');
+    localStorage.setItem('theme', root.classList.contains('dark') ? 'dark' : 'light');
+    button.setAttribute('aria-pressed', String(root.classList.contains('dark')));
+  }));
+  document.querySelectorAll<HTMLDetailsElement>('.mobile-menu').forEach(menu => {
+    menu.querySelectorAll('a').forEach(link => link.addEventListener('click', () => menu.open = false));
+    document.addEventListener('keydown', event => { if (event.key === 'Escape') menu.open = false; });
+  });
+</script>
+<style>
+  .site-nav { position: sticky; top: 0; z-index: 30; border-bottom: 1px solid color-mix(in srgb, var(--accent), var(--border) 58%); background: color-mix(in srgb, var(--bg), transparent 8%); backdrop-filter: blur(12px); }
+  .nav-inner { height: 84px; display: flex; align-items: center; justify-content: space-between; }
+  .brand { min-height: 44px; display: flex; align-items: stretch; gap: .55rem; }.brand-bar { width: 2px; background: var(--accent); }.brand-lines { display: grid; align-content: center; }.brand-lines strong { font: 700 .9rem/.82 "Space Grotesk", sans-serif; letter-spacing: -.01em; color: var(--text-primary); }.brand-lines strong span { color: var(--accent); }
+  .desktop-links { display: flex; align-items: center; gap: 2.15rem; font: 500 .82rem "JetBrains Mono", monospace; color: var(--text-secondary); }
+  .desktop-links a { position: relative; min-height: 44px; display: grid; place-items: center; }
+  .desktop-links a:hover, .desktop-links a[aria-current="page"] { color: var(--text-primary); }
+  .desktop-links a[aria-current="page"]::after { position: absolute; bottom: 4px; width: 18px; height: 1px; content: ""; background: var(--accent); }
+  .nav-actions { display: flex; gap: .5rem; align-items: center; }.admin-shortcut,.theme-toggle { width: 46px; height: 46px; border: 1px solid var(--border); border-radius: 50%; color: var(--text-primary); background: var(--surface); }.admin-shortcut{display:grid;place-items:center;transition:150ms ease}.admin-shortcut svg{width:17px;height:17px;stroke:currentColor;stroke-width:1.5}.admin-shortcut:hover{color:var(--accent);border-color:var(--accent);background:var(--surface-hover)}.theme-toggle { cursor: pointer; }
+  .mobile-menu { display: none; position: relative; }.mobile-menu summary { width: 44px; height: 44px; display: grid; place-content: center; gap: 6px; border: 1px solid var(--border); border-radius: 50%; cursor: pointer; list-style: none; }.mobile-menu summary::-webkit-details-marker { display: none; }.mobile-menu summary span { width: 17px; height: 1px; background: var(--text-primary); }
+  .mobile-panel { position: absolute; top: 52px; right: 0; width: min(290px, calc(100vw - 2rem)); padding: .75rem; border: 1px solid var(--border); border-radius: 10px; background: var(--surface); box-shadow: 0 12px 28px rgba(0,0,0,.12); }
+  .mobile-panel a { min-height: 50px; display: flex; align-items: center; padding: 0 1rem; border-radius: 7px; font-family: "Space Grotesk"; font-size: 1.15rem; }.mobile-panel a:hover, .mobile-panel a[aria-current="page"] { background: var(--surface-hover); color: var(--accent); }
+  @media (max-width: 760px) { .nav-inner { height: 76px; }.brand-lines strong { font-size: .84rem; }.desktop-links { display: none; }.mobile-menu { display: block; } }
+</style>

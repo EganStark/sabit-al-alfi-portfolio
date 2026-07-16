@@ -1,0 +1,9 @@
+---
+import AdminLayout from '../../../layouts/AdminLayout.astro';
+import CertificationForm from '../../../components/admin/CertificationForm.astro';
+import { createCmsClient } from '../../../lib/cms/supabase';
+const { data } = await createCmsClient(Astro.request, Astro.cookies)!.from('certifications').select('*').eq('id', Astro.params.id).single();
+if (!data) return Astro.redirect('/admin/certifications');
+---
+<AdminLayout title="Edit certification" description={`Updating “${data.title}”`}><div class="admin-content"><CertificationForm mode="edit" certification={data} /></div></AdminLayout>
+
