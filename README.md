@@ -2,6 +2,8 @@
 
 A research-led personal portfolio for Data Science, explainable AI, academic work, and practical software engineering. The public presentation is protected by a code-owned design system, while structured content is managed through a secure owner-only CMS.
 
+**Live site:** [sabit-al-alfi-portfolio.vercel.app](https://sabit-al-alfi-portfolio.vercel.app)
+
 ## Highlights
 
 - Responsive, accessible portfolio with light and dark themes
