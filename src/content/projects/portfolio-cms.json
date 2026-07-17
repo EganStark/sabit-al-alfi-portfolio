@@ -1,0 +1,12 @@
+{
+  "title": "Sabit Al Alfi Portfolio & CMS",
+  "category": "Web App",
+  "status": "Complete",
+  "description": "A research-led portfolio paired with a secure owner CMS for managing projects, publications, posts, profile content, media, and site settings without compromising the code-owned design system.",
+  "tags": ["Astro", "TypeScript", "Supabase", "Vercel"],
+  "liveUrl": "https://sabit-al-alfi-portfolio.vercel.app",
+  "githubUrl": "https://github.com/EganStark/sabit-al-alfi-portfolio",
+  "sourceVisibility": "Public",
+  "featured": false,
+  "order": 9
+}
