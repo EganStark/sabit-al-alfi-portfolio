@@ -23,10 +23,10 @@ insert into public.projects (
 (
   'Pagewise',
   'Web App',
-  'In Progress',
+  'Complete',
   'A private, installable reading companion that combines detailed reading history with physical-library inventory, multilingual metadata discovery, lending, personal statistics, and optional grounded AI review.',
   array['React','TypeScript','Supabase','PWA'],
-  null,
+  'https://pagewise-rose.vercel.app/',
   'https://github.com/EganStark/pagewise',
   'Public', false, 7, true
 ),
