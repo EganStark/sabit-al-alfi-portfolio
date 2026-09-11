@@ -1,0 +1,12 @@
+{
+  "title": "Mosque Management System",
+  "category": "Web App",
+  "status": "Complete",
+  "description": "A bilingual full-stack platform for mosque and community operations, combining a public information site with secure administration for members, programs, donations, finance, permissions, and audit-ready records.",
+  "tags": ["React", "TypeScript", "Node.js", "PostgreSQL"],
+  "liveUrl": "https://mosque-management-system-bd.vercel.app/",
+  "githubUrl": "https://github.com/EganStark/mosque_management_system_bd",
+  "sourceVisibility": "Public",
+  "featured": false,
+  "order": 6
+}

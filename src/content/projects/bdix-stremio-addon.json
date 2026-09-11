@@ -1,0 +1,12 @@
+{
+  "title": "BDIX Local Stremio Addon",
+  "category": "Systems",
+  "status": "Complete",
+  "description": "A local-first Python system that indexes authorized BDIX media directories, resolves titles through TMDB and IMDb metadata, and exposes matching direct streams through the standard Stremio addon protocol.",
+  "tags": ["Python", "SQLite", "Stremio", "TMDB"],
+  "liveUrl": null,
+  "githubUrl": "https://github.com/EganStark/bdix-stremio-dhakaflix",
+  "sourceVisibility": "Public",
+  "featured": false,
+  "order": 9
+}

@@ -1,0 +1,12 @@
+{
+  "title": "Pagewise",
+  "category": "Web App",
+  "status": "In Progress",
+  "description": "A private, installable reading companion that combines detailed reading history with physical-library inventory, multilingual metadata discovery, lending, personal statistics, and optional grounded AI review.",
+  "tags": ["React", "TypeScript", "Supabase", "PWA"],
+  "liveUrl": null,
+  "githubUrl": "https://github.com/EganStark/pagewise",
+  "sourceVisibility": "Public",
+  "featured": false,
+  "order": 7
+}
