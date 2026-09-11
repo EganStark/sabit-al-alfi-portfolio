@@ -3,7 +3,7 @@
   "category": "Web App",
   "status": "Complete",
   "description": "A private, installable reading companion that combines detailed reading history with physical-library inventory, multilingual metadata discovery, lending, personal statistics, and optional grounded AI review.",
-  "tags": ["React", "TypeScript", "Supabase", "PWA"],
+  "tags": ["React", "TypeScript", "Supabase", "PWA", "Vite", "Groq AI"],
   "liveUrl": "https://pagewise-rose.vercel.app/",
   "githubUrl": "https://github.com/EganStark/pagewise",
   "sourceVisibility": "Public",
