@@ -61,10 +61,10 @@ insert into public.education_records (period,title,institution,detail,result,sor
 on conflict do nothing;
 
 insert into public.skill_groups (title,skills,sort_order) values
-('Programming & data',array['Python','C','C++','SQL','HTML','Pandas','NumPy'],1),
-('ML & deep learning',array['TensorFlow','PyTorch','CNNs','classification algorithms'],2),
-('Explainable AI',array['Grad-CAM','interpretable computer vision','image processing'],3),
-('Analysis & tools',array['Data cleaning','EDA','Matplotlib','Seaborn','LaTeX','Excel'],4)
+('Languages & engineering',array['Python','C','C++','TypeScript','JavaScript','SQL'],1),
+('Machine learning & analysis',array['PyTorch','TensorFlow','scikit-learn','Pandas','NumPy','Grad-CAM','LIME'],2),
+('Product & infrastructure',array['React','Astro','Node.js','Vite','Supabase','PostgreSQL','Git','Vercel'],3),
+('Data & research tools',array['Data cleaning','EDA','Matplotlib','Seaborn','LaTeX','Excel'],4)
 on conflict (title) do nothing;
 
 insert into public.coursework (title,sort_order) values
