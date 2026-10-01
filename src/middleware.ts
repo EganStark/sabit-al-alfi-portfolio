@@ -14,7 +14,11 @@ export const onRequest = defineMiddleware(async (context, next) => {
   context.locals.cmsUser = data.user ?? null;
 
   const protectedRoute = context.url.pathname.startsWith('/admin') && context.url.pathname !== '/admin/login';
-  const publicAdminApi = context.url.pathname === '/api/admin/login';
+  const publicAdminApi = [
+    '/api/admin/login',
+    '/api/admin/password-recovery',
+    '/api/admin/auth/callback',
+  ].includes(context.url.pathname);
   const protectedApi = context.url.pathname.startsWith('/api/admin/') && !publicAdminApi;
 
   if ((protectedRoute || protectedApi) && !context.locals.cmsUser) {
