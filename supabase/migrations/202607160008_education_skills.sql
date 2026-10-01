@@ -55,9 +55,9 @@ create policy "admins update coursework" on public.coursework for update using (
 create policy "admins delete coursework" on public.coursework for delete using (public.is_cms_admin());
 
 insert into public.education_records (period,title,institution,detail,result,sort_order) values
-('JUN 2021 — DEC 2025','BSc in Computer Science & Engineering','East West University, Dhaka','Major in Data Science','CGPA 3.02 / 4.00',1),
-('2019','Higher Secondary Certificate (HSC)','Govt. Shah Sultan College, Bogra','Science · Rajshahi Board','GPA 4.25 / 5.00',2),
-('2017','Secondary School Certificate (SSC)','APBn Public School and College, Bogra','Science · Rajshahi Board','GPA 5.00 / 5.00',3)
+('JUN 2021 — DEC 2025','BSc in Computer Science & Engineering','East West University, Dhaka','Major in Data Science','',1),
+('2019','Higher Secondary Certificate (HSC)','Govt. Shah Sultan College, Bogra','Science · Rajshahi Board','',2),
+('2017','Secondary School Certificate (SSC)','APBn Public School and College, Bogra','Science · Rajshahi Board','',3)
 on conflict do nothing;
 
 insert into public.skill_groups (title,skills,sort_order) values
